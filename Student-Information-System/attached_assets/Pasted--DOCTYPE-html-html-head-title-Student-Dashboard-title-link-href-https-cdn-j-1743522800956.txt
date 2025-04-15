@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fullcalendar/core/main.css" rel="stylesheet">
+    <style>
+        :root {
+            --discord-dark: #36393F;
+            --discord-darker: #2F3136;
+            --discord-blue: #5865F2;
+        }
+        body {
+            background-color: var(--discord-dark);
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        .sidebar {
+            background-color: var(--discord-darker);
+            height: 100vh;
+        }
+        .card {
+            background-color: var(--discord-darker);
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-2 sidebar p-3">
+                <h4>Student Dashboard</h4>
+                <hr>
+                <a href="/" class="btn btn-dark w-100 mb-2">Home</a>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-10 p-4">
+                <!-- Progress Tracker -->
+                <div class="card p-3 mb-4">
+                    <h5>📊 Your Progress</h5>
+                    <div class="progress mb-2">
+                        <div class="progress-bar bg-success" style="width: 65%">65%</div>
+                    </div>
+                    <small>Course: Introduction to Python</small>
+                </div>
+
+                <!-- Reminders -->
+                <div class="card p-3 mb-4">
+                    <h5>🔔 Reminders</h5>
+                    <form action="/add_reminder" method="POST" class="mb-3">
+                        <input type="text" name="text" placeholder="Reminder text" class="form-control mb-2">
+                        <input type="date" name="due_date" class="form-control mb-2">
+                        <button type="submit" class="btn btn-primary">Add Reminder</button>
+                    </form>
+                    <ul>
+                        {% for reminder in reminders %}
+                        <li>{{ reminder.text }} (Due: {{ reminder.due_date }})</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <!-- Calendar -->
+                <div class="card p-3">
+                    <h5>📅 Calendar</h5>
+                    <div id="calendar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FullCalendar JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const calendarEl = document.getElementById('calendar');
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                events: [
+                    {% for reminder in reminders %}
+                    { title: '{{ reminder.text }}', start: '{{ reminder.due_date }}' },
+                    {% endfor %}
+                ]
+            });
+            calendar.render();
+        });
+    </script>
+</body>
+</html>
